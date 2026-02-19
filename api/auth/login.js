@@ -1,13 +1,19 @@
-import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { getConnection } from '../../backend/src/db.js';
 import { findUserByUsername, storeUserToken } from '../../backend/src/repositories/userRepository.js';
 
-const app = express();
-app.use(express.json());
+export default async function handler(req, res) {
+    if (req.method !== 'POST') {
+        return res.status(405).json({
+            success: false,
+            message: 'Method not allowed'
+        });
+    }
 
-app.post('/api/auth/login', async (req, res) => {
+    let connection;
     try {
+        connection = await getConnection();
         const { username, password } = req.body || {};
 
         if (!username || !password) {
@@ -17,7 +23,7 @@ app.post('/api/auth/login', async (req, res) => {
             });
         }
 
-        const user = await findUserByUsername(username);
+        const user = await findUserByUsername(connection, username);
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({
                 success: false,
@@ -34,7 +40,7 @@ app.post('/api/auth/login', async (req, res) => {
         const decoded = jwt.decode(token);
         const expiryDate = new Date(decoded.exp * 1000);
 
-        await storeUserToken({
+        await storeUserToken(connection, {
             uid: user.uid,
             token,
             expiry: expiryDate
@@ -54,9 +60,10 @@ app.post('/api/auth/login', async (req, res) => {
         console.error('Login error:', error);
         return res.status(500).json({
             success: false,
-            message: 'Internal server error during login'
+            message: 'Internal server error during login',
+            error: error.message
         });
+    } finally {
+        if (connection) await connection.end();
     }
-});
-
-export default app;
+}

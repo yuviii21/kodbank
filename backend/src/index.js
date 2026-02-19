@@ -46,27 +46,20 @@ app.get('/health', (req, res) => {
 
 // 404 handler - always return JSON
 app.use((req, res) => {
-  res.status(404).json({ 
-    success: false, 
-    message: 'Resource not found' 
+  res.status(404).json({
+    success: false,
+    message: 'Resource not found'
   });
 });
 
 // Global error handler - always return JSON (prevents "A server error occurred" HTML)
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
-  res.status(500).json({ 
-    success: false, 
-    message: 'An internal server error occurred' 
+  res.status(500).json({
+    success: false,
+    message: 'An internal server error occurred'
   });
 });
 
 // Export for Vercel serverless functions
 export default app;
-
-// Start server only if not in Vercel environment
-if (process.env.VERCEL !== '1') {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
-}

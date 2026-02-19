@@ -1,12 +1,18 @@
-import express from 'express';
 import bcrypt from 'bcryptjs';
+import { getConnection } from '../../backend/src/db.js';
 import { createUser, findUserByUsername, findUserByEmail } from '../../backend/src/repositories/userRepository.js';
 
-const app = express();
-app.use(express.json());
+export default async function handler(req, res) {
+    if (req.method !== 'POST') {
+        return res.status(405).json({
+            success: false,
+            message: 'Method not allowed'
+        });
+    }
 
-app.post('/api/auth/register', async (req, res) => {
+    let connection;
     try {
+        connection = await getConnection();
         const { uid, uname, username, password, email, phone } = req.body || {};
         const finalUsername = uname || username;
         const role = 'Customer';
@@ -18,7 +24,7 @@ app.post('/api/auth/register', async (req, res) => {
             });
         }
 
-        const existingUser = await findUserByUsername(finalUsername);
+        const existingUser = await findUserByUsername(connection, finalUsername);
         if (existingUser) {
             return res.status(400).json({
                 success: false,
@@ -26,7 +32,7 @@ app.post('/api/auth/register', async (req, res) => {
             });
         }
 
-        const existingEmail = await findUserByEmail(email);
+        const existingEmail = await findUserByEmail(connection, email);
         if (existingEmail) {
             return res.status(400).json({
                 success: false,
@@ -36,7 +42,7 @@ app.post('/api/auth/register', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        await createUser({
+        await createUser(connection, {
             uid,
             username: finalUsername,
             email,
@@ -53,9 +59,10 @@ app.post('/api/auth/register', async (req, res) => {
         console.error('Registration error:', error);
         return res.status(500).json({
             success: false,
-            message: 'Internal server error during registration'
+            message: 'Internal server error during registration',
+            error: error.message
         });
+    } finally {
+        if (connection) await connection.end();
     }
-});
-
-export default app;
+}
