@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { parseJsonResponse } from '../api';
 import './RegisterPage.css';
 
 function RegisterPage() {
@@ -42,7 +43,7 @@ function RegisterPage() {
         })
       });
 
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error || 'Registration failed');

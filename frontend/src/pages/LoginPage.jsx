@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { parseJsonResponse } from '../api';
 import './LoginPage.css';
 
 function LoginPage({ setIsAuthenticated }) {
@@ -33,7 +34,7 @@ function LoginPage({ setIsAuthenticated }) {
         body: JSON.stringify(formData)
       });
 
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error || 'Login failed');

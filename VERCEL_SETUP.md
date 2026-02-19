@@ -58,8 +58,9 @@ Click "Deploy" and wait for the build to complete.
 
 - **Build fails**: Check that all dependencies are in package.json files
 - **API routes 404**: Verify `api/index.js` exists and `vercel.json` rewrites are correct
-- **Database errors**: Check environment variables and Aiven firewall settings
-- **CORS errors**: Update FRONTEND_ORIGIN to match your Vercel URL
+- **Database errors**: Check environment variables and Aiven firewall settings. In Aiven, ensure "Allow access from anywhere" or add Vercel's IP ranges - serverless functions use dynamic IPs.
+- **CORS errors**: Update FRONTEND_ORIGIN to match your Vercel URL (e.g. `https://your-app.vercel.app`)
+- **"A server error occurred" / "Unexpected token"**: Usually means the API crashed before returning. Check: (1) All env vars set in Vercel, (2) Aiven allows connections from Vercel, (3) Database tables exist (run `npm run migrate` locally)
 
 ## Project Structure
 

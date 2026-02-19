@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import confetti from 'canvas-confetti';
+import { parseJsonResponse } from '../api';
 import './DashboardPage.css';
 
 function DashboardPage() {
@@ -47,7 +48,7 @@ function DashboardPage() {
         credentials: 'include'
       });
 
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fetch balance');
