@@ -50,8 +50,8 @@ function DashboardPage() {
 
       const data = await parseJsonResponse(response);
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch balance');
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to fetch balance');
       }
 
       setBalance(data.balance);
@@ -74,8 +74,8 @@ function DashboardPage() {
         <p className="dashboard-subtitle">Manage your Kodbank account</p>
 
         <div className="balance-section">
-          <button 
-            onClick={checkBalance} 
+          <button
+            onClick={checkBalance}
             disabled={loading}
             className="check-balance-button"
           >

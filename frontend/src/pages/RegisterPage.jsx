@@ -45,8 +45,8 @@ function RegisterPage() {
 
       const data = await parseJsonResponse(response);
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Registration failed');
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Registration failed');
       }
 
       // Success - redirect to login
@@ -63,9 +63,9 @@ function RegisterPage() {
       <div className="register-card">
         <h1>Create Kodbank Account</h1>
         <p className="role-display">Role: Customer</p>
-        
+
         {error && <div className="error-message">{error}</div>}
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="uid">User ID</label>

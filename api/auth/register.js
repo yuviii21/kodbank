@@ -23,7 +23,10 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Content-Type', 'application/json');
     Object.entries(corsHeaders(req.headers.origin)).forEach(([k, v]) => res.setHeader(k, v));
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({
+      success: false,
+      message: 'Method not allowed'
+    });
   }
 
   try {
@@ -36,17 +39,26 @@ export default async function handler(req, res) {
     const role = 'Customer';
 
     if (!uid || !finalUsername || !password || !email || !phone) {
-      return res.status(400).json({ error: 'All fields are required' });
+      return res.status(400).json({
+        success: false,
+        message: 'All fields are required'
+      });
     }
 
     const existingUser = await findUserByUsername(finalUsername);
     if (existingUser) {
-      return res.status(400).json({ error: 'Username already exists' });
+      return res.status(400).json({
+        success: false,
+        message: 'Username already exists'
+      });
     }
 
     const existingEmail = await findUserByEmail(email);
     if (existingEmail) {
-      return res.status(400).json({ error: 'Email already exists' });
+      return res.status(400).json({
+        success: false,
+        message: 'Email already exists'
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -60,10 +72,16 @@ export default async function handler(req, res) {
       role
     });
 
-    return res.status(201).json({ message: 'User registered successfully' });
+    return res.status(201).json({
+      success: true,
+      message: 'User registered successfully'
+    });
   } catch (error) {
     console.error('Registration error:', error);
     res.setHeader('Content-Type', 'application/json');
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error during registration'
+    });
   }
 }

@@ -11,13 +11,23 @@ router.get('/balance', authenticateToken, async (req, res) => {
     const balance = await findUserBalanceByUsername(username);
 
     if (balance === null) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
     }
 
-    res.json({ balance });
+    res.json({
+      success: true,
+      message: 'Balance fetched successfully',
+      balance
+    });
   } catch (error) {
     console.error('Balance fetch error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error while fetching balance'
+    });
   }
 });
 

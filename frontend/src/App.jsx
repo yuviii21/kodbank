@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { parseJsonResponse } from './api';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
@@ -16,8 +17,14 @@ function App() {
         const response = await fetch('/api/user/balance', {
           credentials: 'include'
         });
-        if (response.ok) {
+
+        // Use safe parser
+        const data = await parseJsonResponse(response);
+
+        if (response.ok && data.success) {
           setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
         }
       } catch (error) {
         setIsAuthenticated(false);
@@ -35,25 +42,25 @@ function App() {
   return (
     <Routes>
       <Route path="/register" element={<RegisterPage />} />
-      <Route 
-        path="/login" 
+      <Route
+        path="/login"
         element={
           isAuthenticated ? (
             <Navigate to="/dashboard" replace />
           ) : (
             <LoginPage setIsAuthenticated={setIsAuthenticated} />
           )
-        } 
+        }
       />
-      <Route 
-        path="/dashboard" 
+      <Route
+        path="/dashboard"
         element={
           isAuthenticated ? (
             <DashboardPage />
           ) : (
             <Navigate to="/login" replace />
           )
-        } 
+        }
       />
       <Route path="/" element={<Navigate to="/login" replace />} />
     </Routes>

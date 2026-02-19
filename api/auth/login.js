@@ -32,7 +32,10 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Content-Type', 'application/json');
     Object.entries(corsHeaders(req.headers.origin)).forEach(([k, v]) => res.setHeader(k, v));
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({
+      success: false,
+      message: 'Method not allowed'
+    });
   }
 
   try {
@@ -43,17 +46,18 @@ export default async function handler(req, res) {
     const { username, password } = req.body || {};
 
     if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password are required' });
+      return res.status(400).json({
+        success: false,
+        message: 'Username and password are required'
+      });
     }
 
     const user = await findUserByUsername(username);
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid username or password' });
-    }
-
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid username or password' });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid username or password'
+      });
     }
 
     const token = jwt.sign(
@@ -77,10 +81,16 @@ export default async function handler(req, res) {
 
     res.setHeader('Set-Cookie', `${cookieName}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${isProd ? '; Secure' : ''}`);
 
-    return res.json({ message: 'Login successful' });
+    return res.json({
+      success: true,
+      message: 'Login successful'
+    });
   } catch (error) {
     console.error('Login error:', error);
     res.setHeader('Content-Type', 'application/json');
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error during login'
+    });
   }
 }

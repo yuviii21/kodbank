@@ -4,8 +4,9 @@
 export async function parseJsonResponse(response) {
   const text = await response.text();
   try {
-    return text ? JSON.parse(text) : {};
-  } catch (e) {
+    return JSON.parse(text);
+  } catch (err) {
+    console.error("Not JSON response:", text);
     if (!response.ok) {
       throw new Error(text || `Server error (${response.status})`);
     }

@@ -36,8 +36,8 @@ function LoginPage({ setIsAuthenticated }) {
 
       const data = await parseJsonResponse(response);
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Login failed');
       }
 
       // Success - update auth state and redirect
@@ -55,9 +55,9 @@ function LoginPage({ setIsAuthenticated }) {
       <div className="login-card">
         <h1>Welcome to Kodbank</h1>
         <p className="subtitle">Sign in to your account</p>
-        
+
         {error && <div className="error-message">{error}</div>}
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="username">Username</label>

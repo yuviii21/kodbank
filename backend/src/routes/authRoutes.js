@@ -17,19 +17,28 @@ router.post('/register', async (req, res) => {
 
     // Validation
     if (!uid || !finalUsername || !password || !email || !phone) {
-      return res.status(400).json({ error: 'All fields are required' });
+      return res.status(400).json({
+        success: false,
+        message: 'All fields are required'
+      });
     }
 
     // Check if username already exists
     const existingUser = await findUserByUsername(finalUsername);
     if (existingUser) {
-      return res.status(400).json({ error: 'Username already exists' });
+      return res.status(400).json({
+        success: false,
+        message: 'Username already exists'
+      });
     }
 
     // Check if email already exists
     const existingEmail = await findUserByEmail(email);
     if (existingEmail) {
-      return res.status(400).json({ error: 'Email already exists' });
+      return res.status(400).json({
+        success: false,
+        message: 'Email already exists'
+      });
     }
 
     // Hash password
@@ -45,10 +54,16 @@ router.post('/register', async (req, res) => {
       role
     });
 
-    res.status(201).json({ message: 'User registered successfully' });
+    res.status(201).json({
+      success: true,
+      message: 'User registered successfully'
+    });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error during registration'
+    });
   }
 });
 
@@ -59,19 +74,19 @@ router.post('/login', async (req, res) => {
 
     // Validation
     if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password are required' });
+      return res.status(400).json({
+        success: false,
+        message: 'Username and password are required'
+      });
     }
 
     // Find user
     const user = await findUserByUsername(username);
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid username or password' });
-    }
-
-    // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid username or password' });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid username or password'
+      });
     }
 
     // Generate JWT token
@@ -106,10 +121,16 @@ router.post('/login', async (req, res) => {
       maxAge: decoded.exp * 1000 - Date.now()
     });
 
-    res.json({ message: 'Login successful' });
+    res.json({
+      success: true,
+      message: 'Login successful'
+    });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error during login'
+    });
   }
 });
 
