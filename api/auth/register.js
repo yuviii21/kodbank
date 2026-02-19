@@ -3,6 +3,7 @@ import { getConnection } from '../../backend/src/db.js';
 import { createUser, findUserByUsername, findUserByEmail } from '../../backend/src/repositories/userRepository.js';
 
 export default async function handler(req, res) {
+    console.log("Function started");
     if (req.method !== 'POST') {
         return res.status(405).json({
             success: false,
