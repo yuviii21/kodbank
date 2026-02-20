@@ -1,6 +1,7 @@
 {
   "name": "kodbank",
   "version": "1.0.0",
+  "type": "module",
   "description": "Kodbank full-stack application",
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
