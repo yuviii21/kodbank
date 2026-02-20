@@ -59,9 +59,6 @@ JWT_EXPIRES_IN=1h
 
 COOKIE_NAME=KODBANK_TOKEN
 
-FRONTEND_ORIGIN=http://localhost:5173
-
-PORT=4000
 ```
 
 4. Start the backend server:
@@ -70,9 +67,6 @@ npm start
 # or for development with auto-reload:
 npm run dev
 ```
-
-The backend will run on `http://localhost:4000`
-
 ### Frontend Setup
 
 1. Navigate to the frontend directory:
@@ -89,8 +83,6 @@ npm install
 ```bash
 npm run dev
 ```
-
-The frontend will run on `http://localhost:5173`
 
 ## Database Schema
 
@@ -157,6 +149,4 @@ The application uses two tables in the MySQL database:
 - **Cookie not being set**: Check that `credentials: 'include'` is used in fetch requests
 - **Token expired**: Login again to get a new token
 
-## License
-
-ISC
+[Live Demo](https://uvbank.vercel.app/login)
